@@ -1,8 +1,12 @@
 from flask import Flask, render_template, jsonify
 import xml.etree.ElementTree as ET
 import json
+from flask_cors import CORS
+
+
 
 app=Flask(__name__)
+CORS(app)
 
 def xml_to_dict(element):
     result = {}
@@ -51,11 +55,15 @@ def index():
 
 @app.route('/data')
 def get_data():
-    json_data = load_schedule_data()
-    if json_data:
-        return jsonify(json.loads(json_data))
-    else:
-        return jsonify({"error": "Не удалось загрузить данные"}), 500
+    try:
+        json_data = load_schedule_data()
+        if json_data:
+            return jsonify(json.loads(json_data))
+        else:
+            return jsonify({"error": "Не удалось загрузить данные"}), 500
+    except Exception as e:
+        print(f"Ошибка в /data: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 
 
