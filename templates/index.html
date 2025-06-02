@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание занятий</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img id="university-logo" alt="Логотип университета">
+            <h1>РАСПИСАНИЕ ЗАНЯТИЙ</h1>
+            <h2 id="semester-info"></h2>
+        </div>
+    </header>
+    
+    <main>
+        <div class="controls">
+            <select id="group-select">
+                <option value="">Выберите группу</option>
+            </select>
+            <select id="teacher-select">
+                <option value="">Выберите преподавателя</option>
+            </select>
+            <button id="show-schedule">Показать расписание</button>
+        </div>
+        
+        <div class="info-cards">
+            <div class="card" id="group-info">
+                <h3>Информация о группе</h3>
+                <div class="card-content">
+                    <p>Выберите группу для отображения информации</p>
+                </div>
+            </div>
+            
+            <div class="card" id="teacher-info">
+                <h3>Информация о преподавателе</h3>
+                <div class="card-content">
+                    <p>Выберите преподавателя для отображения информации</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="schedule-container">
+            <h3>Расписание занятий</h3>
+            <div id="schedule-days"></div>
+        </div>
+    </main>
+    
+    <footer>
+        <p id="copyright"></p>
+        <p>Контакты: <span id="contacts"></span></p>
+    </footer>
+    
+    <script src="static/script.js"></script>
+</body>
+</html>
