@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  Расписание занятий университета 
-  Включает данные о группах, преподавателях, аудиториях и расписании
--->
 <university_schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata>
     <university_name>Национальный Технический Университет</university_name>
