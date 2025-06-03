@@ -27,12 +27,10 @@ def xml_to_dict(element):
         else:
             result[child.tag] = child_data
 
-    # Если у элемента есть и текст, и потомки, сохраняем текст в '#text'
-    # Иначе, если есть только текст, возвращаем его
     if result and has_text:
         return result
     elif has_text:
-        return result.get('#text')  # Возвращаем просто текст, если нет атрибутов и дочерних элементов
+        return result.get('#text')  
     else:
         return result
 

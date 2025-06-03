@@ -232,14 +232,6 @@
     <character>Амперсанд: &amp;</character>
   </special_characters>
   
-  <!-- Изображение (в base64) -->
-  <image>
-    <description>Логотип университета</description>
-    <data>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIXF6gKZQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAJklEQVQ4y2NgGAWjYBSMglEwCkbBKBgM4D8U/2dgYPjPwMDAwAAAKVYCAVkQhZQAAAAASUVORK5CYII=</data>
-    <format>png</format>
-    <width>100</width>
-    <height>100</height>
-  </image>
   
   <!-- Список администрации -->
   <administration>
