@@ -1,244 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<university_schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <metadata>
-    <university_name>Национальный Технический Университет</university_name>
-    <semester>Осенний семестр 2023/2024</semester>
-    <last_updated>2023-08-15</last_updated>
-    <version>1.2</version>
-  </metadata>
-  
-  <!-- Список факультетов -->
+<university_schedule>
+  <!-- Основная информация -->
+  <university_info>
+    <name>Технический Университет</name>
+    <semester>Осенний семестр 2023</semester>
+  </university_info>
+
+  <!-- Факультеты -->
   <faculties>
-    <faculty id="f1">
-      <name>Факультет Информационных Технологий</name>
-      <dean>Иванов П.С.</dean>
-      <contact>it@university.edu</contact>
+    <faculty>
+      <id>f1</id>
+      <name>Факультет Информатики</name>
     </faculty>
-    <faculty id="f2">
+    <faculty>
+      <id>f2</id>
       <name>Инженерный Факультет</name>
-      <dean>Петрова А.В.</dean>
-      <contact>eng@university.edu</contact>
     </faculty>
   </faculties>
-  
-  <!-- Список групп -->
+
+  <!-- Группы -->
   <groups>
-    <group id="g1" faculty="f1">
+    <group>
+      <id>g1</id>
+      <faculty>f1</faculty>
       <code>ИТ-101</code>
-      <course>1</course>
-      <students_count>25</students_count>
-      <curator>Сидоров В.П.</curator>
     </group>
-    <group id="g2" faculty="f1">
+    <group>
+      <id>g2</id>
+      <faculty>f1</faculty>
       <code>ИТ-201</code>
-      <course>2</course>
-      <students_count>22</students_count>
-      <curator>Кузнецова Е.С.</curator>
     </group>
-    <group id="g3" faculty="f2">
-      <code>МЕХ-301</code>
-      <course>3</course>
-      <students_count>18</students_count>
-      <curator>Васильев Д.И.</curator>
+    <group>
+      <id>g3</id>
+      <faculty>f2</faculty>
+      <code>ИНЖ-102</code>
     </group>
   </groups>
-  
-  <!-- Список преподавателей -->
+
+  <!-- Преподаватели -->
   <teachers>
-    <teacher id="t1">
-      <name>Смирнов А.Б.</name>
-      <position>Профессор</position>
-      <department>Кафедра Программирования</department>
-      <degree>Доктор наук</degree>
-      <contacts>
-        <email>smirnov@university.edu</email>
-        <phone>+7 (123) 456-7890</phone>
-      </contacts>
+    <teacher>
+      <id>t1</id>
+      <name>Иванов А.Б.</name>
     </teacher>
-    <teacher id="t2">
-      <name>Ковалева Е.В.</name>
-      <position>Доцент</position>
-      <department>Кафедра Математики</department>
-      <degree>Кандидат наук</degree>
-      <contacts>
-        <email>kovaleva@university.edu</email>
-      </contacts>
-    </teacher>
-    <teacher id="t3">
-      <name>Петров С.Д.</name>
-      <position>Старший преподаватель</position>
-      <department>Кафедра Физики</department>
-      <degree>Кандидат наук</degree>
-      <contacts>
-        <email>petrov@university.edu</email>
-        <phone>+7 (123) 456-7891</phone>
-      </contacts>
+    <teacher>
+      <id>t2</id>
+      <name>Петрова В.Г.</name>
     </teacher>
   </teachers>
-  
-  <!-- Список аудиторий -->
-  <classrooms>
-    <classroom id="r1">
-      <number>101</number>
-      <building>Главный корпус</building>
-      <capacity>30</capacity>
-      <type>Лекционная</type>
-      <equipment>Проектор, доска</equipment>
-    </classroom>
-    <classroom id="r2">
-      <number>205</number>
-      <building>Главный корпус</building>
-      <capacity>25</capacity>
-      <type>Компьютерный класс</type>
-      <equipment>Компьютеры (20), проектор</equipment>
-    </classroom>
-    <classroom id="r3">
-      <number>12</number>
-      <building>Лабораторный корпус</building>
-      <capacity>15</capacity>
-      <type>Лаборатория</type>
-      <equipment>Лабораторное оборудование</equipment>
-    </classroom>
-  </classrooms>
-  
-  <!-- Расписание занятий -->
-  <schedule>
-    <!-- Понедельник -->
-    <day name="Понедельник">
-      <lesson>
-        <time>09:00-10:30</time>
-        <group ref="g1"/>
-        <subject>Математический анализ</subject>
-        <teacher ref="t2"/>
-        <classroom ref="r1"/>
-        <type>Лекция</type>
-        <weekly>Каждую неделю</weekly>
-      </lesson>
-      <lesson>
-        <time>10:45-12:15</time>
-        <group ref="g1"/>
-        <subject>Программирование</subject>
-        <teacher ref="t1"/>
-        <classroom ref="r2"/>
-        <type>Практика</type>
-        <weekly>Каждую неделю</weekly>
-      </lesson>
-      <lesson>
-        <time>13:00-14:30</time>
-        <group ref="g2"/>
-        <subject>Базы данных</subject>
-        <teacher ref="t1"/>
-        <classroom ref="r2"/>
-        <type>Лекция</type>
-        <weekly>Чётная неделя</weekly>
-      </lesson>
-    </day>
-    
-    <!-- Вторник -->
-    <day name="Вторник">
-      <lesson>
-        <time>09:00-10:30</time>
-        <group ref="g3"/>
-        <subject>Физика</subject>
-        <teacher ref="t3"/>
-        <classroom ref="r3"/>
-        <type>Лабораторная работа</type>
-        <weekly>Нечётная неделя</weekly>
-      </lesson>
-      <lesson>
-        <time>10:45-12:15</time>
-        <group ref="g2"/>
-        <subject>Алгоритмы и структуры данных</subject>
-        <teacher ref="t1"/>
-        <classroom ref="r1"/>
-        <type>Лекция</type>
-        <weekly>Каждую неделю</weekly>
-      </lesson>
-    </day>
-    
-    <!-- Среда -->
-    <day name="Среда">
-      <lesson>
-        <time>09:00-12:15</time>
-        <group ref="g1"/>
-        <subject>Программирование</subject>
-        <teacher ref="t1"/>
-        <classroom ref="r2"/>
-        <type>Лабораторная работа</type>
-        <weekly>Каждую неделю</weekly>
-        <note>Двойное занятие</note>
-      </lesson>
-    </day>
-    
-    <!-- Четверг -->
-    <day name="Четверг">
-      <lesson>
-        <time>10:45-12:15</time>
-        <group ref="g2"/>
-        <subject>Иностранный язык</subject>
-        <teacher ref="t4"/>
-        <classroom ref="r4"/>
-        <type>Практика</type>
-        <weekly>Каждую неделю</weekly>
-      </lesson>
-    </day>
-    
-    <!-- Пятница -->
-    <day name="Пятница">
-      <lesson>
-        <time>13:00-14:30</time>
-        <group ref="g1"/>
-        <subject>Физическая культура</subject>
-        <teacher ref="t5"/>
-        <classroom ref="sport_hall"/>
-        <type>Практика</type>
-        <weekly>Каждую неделю</weekly>
-      </lesson>
-    </day>
-  </schedule>
-  
-  <!-- Дополнительная информация -->
-  <additional_info>
-    <holidays>
-      <holiday>
-        <date>2023-11-07</date>
-        <description>День народного единства</description>
-      </holiday>
-      <holiday>
-        <date>2023-12-31</date>
-        <date>2024-01-08</date>
-        <description>Новогодние каникулы</description>
-      </holiday>
-    </holidays>
-    
-    <important_dates>
-      <event>
-        <date>2023-09-01</date>
-        <description>Начало учебного года</description>
-      </event>
-      <event>
-        <date>2023-12-25</date>
-        <date>2024-01-10</date>
-        <description>Зимняя сессия</description>
-      </event>
-    </important_dates>
-  </additional_info>
-  
+
+  <!-- Изображение -->
+  <images>
+    <image>
+      <title>Логотип</title>
+      <url>/static/university_logo.png</url>
+    </image>
+  </images>
+
+  <!-- Расписание -->
+  <lessons>
+    <lesson>
+      <day>Понедельник</day>
+      <time>09:00-10:30</time>
+      <group>g1</group>
+      <subject>Математика</subject>
+      <teacher>t1</teacher>
+    </lesson>
+    <lesson>
+      <day>Понедельник</day>
+      <time>10:45-12:15</time>
+      <group>g1</group>
+      <subject>Программирование</subject>
+      <teacher>t2</teacher>
+    </lesson>
+    <lesson>
+      <day>Вторник</day>
+      <time>09:00-10:30</time>
+      <group>g2</group>
+      <subject>Базы данных</subject>
+      <teacher>t1</teacher>
+    </lesson>
+    <lesson>
+      <day>Среда</day>
+      <time>14:00-15:30</time>
+      <group>g3</group>
+      <subject>Физика</subject>
+      <teacher>t2</teacher>
+    </lesson>
+  </lessons>
+
   <!-- Специальные символы -->
-  <special_characters>
-    <character>© 2023 НТУ</character>
-    <character>Логотип: &lt;NTU&gt;</character>
-    <character>Кавычки: &quot;Расписание&quot;</character>
-    <character>Амперсанд: &amp;</character>
-  </special_characters>
-  
-  
-  <!-- Список администрации -->
-  <administration>
+  <special_chars>
+    <char>© 2023 Университет</char>
+    <char>"Кавычки"</char>
+    <char>&amp; Амперсанд</char>
+  </special_chars>
+
+  <!-- Административные должности -->
+  <positions>
     <position>Ректор</position>
-    <position>Проректор по учебной работе</position>
-    <position>Декан факультета</position>
-    <position>Заведующий кафедрой</position>
-    <position>Методист</position>
-  </administration>
+    <position>Декан</position>
+  </positions>
 </university_schedule>

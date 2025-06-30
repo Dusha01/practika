@@ -1,39 +1,49 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Загрузка данных с сервера
     fetch('/data')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка загрузки данных');
+            }
+            return response.json();
+        })
         .then(data => {
+            // Отображение основной информации
             displayBasicInfo(data);
             
+            // Заполнение выпадающих списков
             populateDropdowns(data);
             
+            // Настройка обработчиков событий
             setupEventHandlers(data);
         })
-        .catch(error => console.error('Ошибка загрузки данных:', error));
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.');
+        });
 });
 
+
 function displayBasicInfo(data) {
+    // Отображение информации о семестре
     const semesterInfo = document.getElementById('semester-info');
-    if (data.metadata && data.metadata.semester) {
-        semesterInfo.textContent = data.metadata.semester['#text'];
+    if (data.university_info && data.university_info.semester) {
+        semesterInfo.textContent = data.university_info.semester['#text'] || data.university_info.semester;
     }
     
+    // Отображение логотипа
     const logo = document.getElementById('university-logo');
-    if (data.image && data.image.data) {
-        logo.src = `data:image/png;base64,${data.image.data['#text']}`;
+    if (data.images?.image) {
+        const images = Array.isArray(data.images.image) ? data.images.image : [data.images.image];
+        logo.src = images[0].url?.['#text'] || images[0].url || '';
     }
     
+    // Отображение информации в футере
     const copyright = document.getElementById('copyright');
-    if (data.special_characters && data.special_characters.character) {
-        const characters = Array.isArray(data.special_characters.character) ? 
-            data.special_characters.character : [data.special_characters.character];
-        copyright.textContent = characters.find(c => c['#text'].includes('©'))?.['#text'] || '';
-    }
-    
-    const contacts = document.getElementById('contacts');
-    if (data.faculties && data.faculties.faculty) {
-        const faculties = Array.isArray(data.faculties.faculty) ? 
-            data.faculties.faculty : [data.faculties.faculty];
-        contacts.textContent = faculties.map(f => f.contact['#text']).join(', ');
+    if (data.special_chars && data.special_chars.char) {
+        const chars = Array.isArray(data.special_chars.char) ? 
+            data.special_chars.char : [data.special_chars.char];
+        copyright.textContent = chars[0]['#text'] || chars[0];
     }
 }
 
@@ -41,53 +51,55 @@ function populateDropdowns(data) {
     const groupSelect = document.getElementById('group-select');
     const teacherSelect = document.getElementById('teacher-select');
     
-    if (data.groups && data.groups.group) {
-        const groups = Array.isArray(data.groups.group) ? 
-            data.groups.group : [data.groups.group];
-            
+    // Очищаем выпадающие списки
+    groupSelect.innerHTML = '<option value="">Выберите группу</option>';
+    teacherSelect.innerHTML = '<option value="">Выберите преподавателя</option>';
+    
+    // Заполняем группы
+    if (data.groups?.group) {
+        const groups = Array.isArray(data.groups.group) ? data.groups.group : [data.groups.group];
         groups.forEach(group => {
             const option = document.createElement('option');
-            option.value = group['@attributes'].id;
-            option.textContent = group.code['#text'];
+            option.value = group.id?.['#text'] || group.id || '';
+            option.textContent = group.code?.['#text'] || group.code || '';
             groupSelect.appendChild(option);
         });
     }
     
-    if (data.teachers && data.teachers.teacher) {
-        const teachers = Array.isArray(data.teachers.teacher) ? 
-            data.teachers.teacher : [data.teachers.teacher];
-            
+    // Добавляем заполнение преподавателей
+    if (data.teachers?.teacher) {
+        const teachers = Array.isArray(data.teachers.teacher) ? data.teachers.teacher : [data.teachers.teacher];
         teachers.forEach(teacher => {
             const option = document.createElement('option');
-            option.value = teacher['@attributes'].id;
-            option.textContent = teacher.name['#text'];
+            option.value = teacher.id?.['#text'] || teacher.id || '';
+            option.textContent = teacher.name?.['#text'] || teacher.name || '';
             teacherSelect.appendChild(option);
         });
     }
 }
 
+
 function setupEventHandlers(data) {
     const showScheduleBtn = document.getElementById('show-schedule');
-    const groupSelect = document.getElementById('group-select');
-    const teacherSelect = document.getElementById('teacher-select');
     
     showScheduleBtn.addEventListener('click', function() {
-        const selectedGroupId = groupSelect.value;
-        const selectedTeacherId = teacherSelect.value;
+        const selectedGroupId = document.getElementById('group-select').value;
+        const selectedTeacherId = document.getElementById('teacher-select').value;
         
         if (selectedGroupId) {
             displayGroupInfo(selectedGroupId, data);
             displayScheduleForGroup(selectedGroupId, data);
-        }
-        
-        if (selectedTeacherId) {
+        } 
+        else if (selectedTeacherId) {
             displayTeacherInfo(selectedTeacherId, data);
-            if (!selectedGroupId) {
-                displayScheduleForTeacher(selectedTeacherId, data);
-            }
+            displayScheduleForTeacher(selectedTeacherId, data);
+        }
+        else {
+            alert('Пожалуйста, выберите группу или преподавателя');
         }
     });
 }
+
 
 function displayGroupInfo(groupId, data) {
     const groupInfoCard = document.getElementById('group-info').querySelector('.card-content');
@@ -97,24 +109,20 @@ function displayGroupInfo(groupId, data) {
     const groups = Array.isArray(data.groups.group) ? 
         data.groups.group : [data.groups.group];
     
-    const group = groups.find(g => g['@attributes'].id === groupId);
+    const group = groups.find(g => g.id === groupId);
     if (!group) return;
     
     let html = `
-        <p><strong>Код группы:</strong> ${group.code['#text']}</p>
-        <p><strong>Курс:</strong> ${group.course['#text']}</p>
-        <p><strong>Количество студентов:</strong> ${group.students_count['#text']}</p>
-        <p><strong>Куратор:</strong> ${group.curator['#text']}</p>
+        <p><strong>Код группы:</strong> ${group.code}</p>
     `;
     
     if (data.faculties && data.faculties.faculty) {
         const faculties = Array.isArray(data.faculties.faculty) ? 
             data.faculties.faculty : [data.faculties.faculty];
         
-        const faculty = faculties.find(f => f['@attributes'].id === group['@attributes'].faculty);
+        const faculty = faculties.find(f => f.id === group.faculty);
         if (faculty) {
-            html += `<p><strong>Факультет:</strong> ${faculty.name['#text']}</p>`;
-            html += `<p><strong>Декан:</strong> ${faculty.dean['#text']}</p>`;
+            html += `<p><strong>Факультет:</strong> ${faculty.name}</p>`;
         }
     }
     
@@ -124,204 +132,108 @@ function displayGroupInfo(groupId, data) {
 function displayTeacherInfo(teacherId, data) {
     const teacherInfoCard = document.getElementById('teacher-info').querySelector('.card-content');
     
-    if (!data.teachers || !data.teachers.teacher) return;
+    if (!data.teachers?.teacher) return;
     
-    const teachers = Array.isArray(data.teachers.teacher) ? 
-        data.teachers.teacher : [data.teachers.teacher];
+    const teachers = Array.isArray(data.teachers.teacher) ? data.teachers.teacher : [data.teachers.teacher];
+    const teacher = teachers.find(t => (t.id?.['#text'] || t.id) === teacherId);
     
-    const teacher = teachers.find(t => t['@attributes'].id === teacherId);
     if (!teacher) return;
     
-    let html = `
-        <p><strong>ФИО:</strong> ${teacher.name['#text']}</p>
-        <p><strong>Должность:</strong> ${teacher.position['#text']}</p>
-        <p><strong>Кафедра:</strong> ${teacher.department['#text']}</p>
-        <p><strong>Ученая степень:</strong> ${teacher.degree['#text']}</p>
+    teacherInfoCard.innerHTML = `
+        <p><strong>Имя:</strong> ${teacher.name?.['#text'] || teacher.name || ''}</p>
+        ${teacher.department ? `<p><strong>Кафедра:</strong> ${teacher.department?.['#text'] || teacher.department || ''}</p>` : ''}
     `;
-    
-    if (teacher.contacts) {
-        html += '<p><strong>Контакты:</strong></p><ul>';
-        
-        if (teacher.contacts.email) {
-            html += `<li>Email: ${teacher.contacts.email['#text']}</li>`;
-        }
-        
-        if (teacher.contacts.phone) {
-            html += `<li>Телефон: ${teacher.contacts.phone['#text']}</li>`;
-        }
-        
-        html += '</ul>';
-    }
-    
-    teacherInfoCard.innerHTML = html;
-}
-
-function displayScheduleForGroup(groupId, data) {
-    const scheduleDaysContainer = document.getElementById('schedule-days');
-    scheduleDaysContainer.innerHTML = '';
-    
-    if (!data.schedule || !data.schedule.day) return;
-    
-    const days = Array.isArray(data.schedule.day) ? 
-        data.schedule.day : [data.schedule.day];
-    
-    days.forEach(day => {
-        if (!day.lesson) return;
-        
-        const lessons = Array.isArray(day.lesson) ? 
-            day.lesson : [day.lesson];
-            
-        const groupLessons = lessons.filter(lesson => 
-            lesson.group && lesson.group['@attributes'].ref === groupId
-        );
-        
-        if (groupLessons.length === 0) return;
-        
-        const dayElement = document.createElement('div');
-        dayElement.className = 'day-schedule';
-        
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'day-header';
-        dayHeader.textContent = day['@attributes'].name;
-        dayElement.appendChild(dayHeader);
-        
-        groupLessons.forEach(lesson => {
-            const lessonElement = document.createElement('div');
-            lessonElement.className = 'lesson';
-            
-            let time = lesson.time ? lesson.time['#text'] : 'Время не указано';
-            let subject = lesson.subject ? lesson.subject['#text'] : 'Предмет не указан';
-            let type = lesson.type ? lesson.type['#text'] : 'Тип не указан';
-            let weekly = lesson.weekly ? lesson.weekly['#text'] : '';
-            
-            let teacherName = 'Преподаватель не указан';
-            if (lesson.teacher && data.teachers && data.teachers.teacher) {
-                const teachers = Array.isArray(data.teachers.teacher) ? 
-                    data.teachers.teacher : [data.teachers.teacher];
-                
-                const teacher = teachers.find(t => 
-                    t['@attributes'].id === lesson.teacher['@attributes'].ref
-                );
-                
-                if (teacher) {
-                    teacherName = teacher.name['#text'];
-                }
-            }
-            
-            let classroomInfo = 'Аудитория не указана';
-            if (lesson.classroom && data.classrooms && data.classrooms.classroom) {
-                const classrooms = Array.isArray(data.classrooms.classroom) ? 
-                    data.classrooms.classroom : [data.classrooms.classroom];
-                
-                const classroom = classrooms.find(r => 
-                    r['@attributes'].id === lesson.classroom['@attributes'].ref
-                );
-                
-                if (classroom) {
-                    classroomInfo = `${classroom.number['#text']} (${classroom.building['#text']})`;
-                }
-            }
-            
-            lessonElement.innerHTML = `
-                <div>
-                    <strong>${time}</strong><br>
-                    ${subject}<br>
-                    <em>${type}</em> ${weekly ? `(${weekly})` : ''}
-                </div>
-                <div>
-                    ${teacherName}<br>
-                    ${classroomInfo}
-                </div>
-            `;
-            
-            dayElement.appendChild(lessonElement);
-        });
-        
-        scheduleDaysContainer.appendChild(dayElement);
-    });
 }
 
 function displayScheduleForTeacher(teacherId, data) {
     const scheduleDaysContainer = document.getElementById('schedule-days');
-    scheduleDaysContainer.innerHTML = '';
+    scheduleDaysContainer.innerHTML = '<h4>Расписание преподавателя</h4>';
     
-    if (!data.schedule || !data.schedule.day) return;
+    if (!data.lessons?.lesson) {
+        scheduleDaysContainer.innerHTML += '<p>Нет данных о занятиях</p>';
+        return;
+    }
     
-    const days = Array.isArray(data.schedule.day) ? 
-        data.schedule.day : [data.schedule.day];
+    const lessons = Array.isArray(data.lessons.lesson) ? data.lessons.lesson : [data.lessons.lesson];
+    const teacherLessons = lessons.filter(lesson => 
+        (lesson.teacher?.['#text'] || lesson.teacher) === teacherId
+    );
     
-    days.forEach(day => {
-        if (!day.lesson) return;
+    if (teacherLessons.length === 0) {
+        scheduleDaysContainer.innerHTML += '<p>Нет занятий у выбранного преподавателя</p>';
+        return;
+    }
+    
+    const scheduleList = document.createElement('ul');
+    scheduleList.className = 'schedule-list';
+    
+    teacherLessons.forEach(lesson => {
+        const day = lesson.day?.['#text'] || lesson.day || '';
+        const time = lesson.time?.['#text'] || lesson.time || '';
+        const subject = lesson.subject?.['#text'] || lesson.subject || '';
+        const groupId = lesson.group?.['#text'] || lesson.group || '';
         
-        const lessons = Array.isArray(day.lesson) ? 
-            day.lesson : [day.lesson];
-            
-        const teacherLessons = lessons.filter(lesson => 
-            lesson.teacher && lesson.teacher['@attributes'].ref === teacherId
-        );
-        
-        if (teacherLessons.length === 0) return;
-        
-        const dayElement = document.createElement('div');
-        dayElement.className = 'day-schedule';
-        
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'day-header';
-        dayHeader.textContent = day['@attributes'].name;
-        dayElement.appendChild(dayHeader);
-        
-        teacherLessons.forEach(lesson => {
-            const lessonElement = document.createElement('div');
-            lessonElement.className = 'lesson';
-            
-            let time = lesson.time ? lesson.time['#text'] : 'Время не указано';
-            let subject = lesson.subject ? lesson.subject['#text'] : 'Предмет не указан';
-            let type = lesson.type ? lesson.type['#text'] : 'Тип не указан';
-            let weekly = lesson.weekly ? lesson.weekly['#text'] : '';
-            
-            let groupInfo = 'Группа не указана';
-            if (lesson.group && data.groups && data.groups.group) {
-                const groups = Array.isArray(data.groups.group) ? 
-                    data.groups.group : [data.groups.group];
-                
-                const group = groups.find(g => 
-                    g['@attributes'].id === lesson.group['@attributes'].ref
-                );
-                
-                if (group) {
-                    groupInfo = group.code['#text'];
-                }
-            }
-            
-            let classroomInfo = 'Аудитория не указана';
-            if (lesson.classroom && data.classrooms && data.classrooms.classroom) {
-                const classrooms = Array.isArray(data.classrooms.classroom) ? 
-                    data.classrooms.classroom : [data.classrooms.classroom];
-                
-                const classroom = classrooms.find(r => 
-                    r['@attributes'].id === lesson.classroom['@attributes'].ref
-                );
-                
-                if (classroom) {
-                    classroomInfo = `${classroom.number['#text']} (${classroom.building['#text']})`;
-                }
-            }
-            
-            lessonElement.innerHTML = `
-                <div>
-                    <strong>${time}</strong><br>
-                    ${subject}<br>
-                    <em>${type}</em> ${weekly ? `(${weekly})` : ''}
-                </div>
-                <div>
-                    Группа: ${groupInfo}<br>
-                    ${classroomInfo}
-                </div>
+        if (day && time && subject) {
+            const lessonItem = document.createElement('li');
+            lessonItem.className = 'schedule-item';
+            lessonItem.innerHTML = `
+                <strong>${day}</strong>: ${time} - ${subject} 
+                (Группа: ${getGroupName(groupId, data)})
             `;
-            
-            dayElement.appendChild(lessonElement);
-        });
-        
-        scheduleDaysContainer.appendChild(dayElement);
+            scheduleList.appendChild(lessonItem);
+        }
     });
+    
+    scheduleDaysContainer.appendChild(scheduleList);
+}
+
+// Вспомогательная функция для получения названия группы по ID
+function getGroupName(groupId, data) {
+    if (!data.groups?.group) return groupId;
+    
+    const groups = Array.isArray(data.groups.group) ? data.groups.group : [data.groups.group];
+    const group = groups.find(g => (g.id?.['#text'] || g.id) === groupId);
+    
+    return group?.code?.['#text'] || group?.code || groupId;
+}
+
+
+function displayScheduleForGroup(groupId, data) {
+    const scheduleDaysContainer = document.getElementById('schedule-days');
+    scheduleDaysContainer.innerHTML = '<h4>Расписание</h4>';
+    
+    if (!data.lessons || !data.lessons.lesson) {
+        scheduleDaysContainer.innerHTML += '<p>Нет данных о занятиях</p>';
+        return;
+    }
+    
+    const lessons = Array.isArray(data.lessons.lesson) ? 
+        data.lessons.lesson : [data.lessons.lesson];
+    
+    const groupLessons = lessons.filter(lesson => 
+        (lesson.group?.['#text'] || lesson.group) === groupId
+    );
+    
+    if (groupLessons.length === 0) {
+        scheduleDaysContainer.innerHTML += '<p>Нет занятий для выбранной группы</p>';
+        return;
+    }
+    
+    const scheduleList = document.createElement('ul');
+    
+    groupLessons.forEach(lesson => {
+        const day = lesson.day?.['#text'] || lesson.day || '';
+        const time = lesson.time?.['#text'] || lesson.time || '';
+        const subject = lesson.subject?.['#text'] || lesson.subject || '';
+        
+        if (day && time && subject) {
+            const lessonItem = document.createElement('li');
+            lessonItem.innerHTML = `
+                <strong>${day}</strong>: ${time} - ${subject}
+            `;
+            scheduleList.appendChild(lessonItem);
+        }
+    });
+    
+    scheduleDaysContainer.appendChild(scheduleList);
 }

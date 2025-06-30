@@ -10,29 +10,30 @@ def xml_to_dict(element):
     result = {}
     if element.attrib:
         result['@attributes'] = element.attrib
-
-    has_text = False
     if element.text and element.text.strip():
         result['#text'] = element.text.strip()
-        has_text = True
 
     for child in element:
         child_data = xml_to_dict(child)
-        
         if child.tag in result:
             if isinstance(result[child.tag], list):
                 result[child.tag].append(child_data)
             else:
                 result[child.tag] = [result[child.tag], child_data]
         else:
-            result[child.tag] = child_data
+            if element.tag == 'lessons' and child.tag == 'lesson':
+                simplified_lesson = {}
+                for subchild in child:
+                    if subchild.text and subchild.text.strip():
+                        simplified_lesson[subchild.tag] = subchild.text.strip()
+                if child.tag not in result:
+                    result[child.tag] = []
+                result[child.tag].append(simplified_lesson)
+            else:
+                result[child.tag] = child_data
 
-    if result and has_text:
-        return result
-    elif has_text:
-        return result.get('#text')  
-    else:
-        return result
+    return result
+
 
 def load_schedule_data():
     try:
